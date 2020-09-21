@@ -10,6 +10,6 @@ class Activity {
   String description = "A new activity";
 
   /// Easy constructor
-  Activity(this.id, this.name);
-  Activity.description(this.id, this.name, this.description);
+  /// This first will assign id when assigned to model
+  Activity({this.name, this.id, this.description});
 }
