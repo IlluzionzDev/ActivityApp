@@ -24,10 +24,20 @@ class _ActivityListObjectState extends State<ActivityListObject> {
 
   @override
   Widget build(BuildContext context) {
+    var model = context.watch<ActivityModel>();
+
     return ListTile(
       title: Text(
-          this.activity.id.toString() + " | " + this.activity.name
+          this.activity.name
       ),
+      subtitle: this.activity.description.trim() == "" ? null : Text(this.activity.description),
+      trailing: IconButton(icon: Icon(Icons.more_vert), onPressed: () {
+        /// Open options menu
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => new UpdateActivity(model.get(this.activity.id), true))
+        );
+      }),
     );
   }
 }
@@ -64,8 +74,6 @@ class _DisplayActivitiesHomeState extends State<DisplayActivitiesHome> {
 
   @override
   Widget build(BuildContext context) {
-    var model = context.watch<ActivityModel>();
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Activities'),
@@ -76,7 +84,7 @@ class _DisplayActivitiesHomeState extends State<DisplayActivitiesHome> {
           // Create new activity
           Navigator.push(
             context,
-              MaterialPageRoute(builder: (context) => new CreateActivity())
+              MaterialPageRoute(builder: (context) => new UpdateActivity(new Activity(), false))
           );
         },
         label: Text('New Activity'),

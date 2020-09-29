@@ -1,19 +1,57 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/activity/activity.dart';
 import 'package:flutter_app/activity/activity_model.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:weekday_selector/weekday_selector.dart';
 
-class CreateActivity extends StatefulWidget {
+/// Dual class for creating and editing activities
+class UpdateActivity extends StatefulWidget {
+  // The activity to update/create
+  final Activity activity;
+
+  // If this should edit the activity or insert it
+  final bool editing;
+
+  UpdateActivity(this.activity, this.editing);
+
   @override
-  _CreateActivityState createState() => _CreateActivityState();
+  _UpdateActivityState createState() =>
+      _UpdateActivityState(this.activity, this.editing);
 }
 
-class _CreateActivityState extends State<CreateActivity> {
+class _UpdateActivityState extends State<UpdateActivity> {
+  // The activity to update/create
+  final Activity activity;
+
+  // If this should edit the activity or insert it
+  final bool editing;
+
+  _UpdateActivityState(this.activity, this.editing);
+
   /// Hold the state of our form
   final _formKey = GlobalKey<FormState>();
-  /// Object to create
-  Activity activity = Activity();
 
+  // Nicely formatted time to display
+  String displayTime = "Select a time";
+
+  /// Store occurrence details here in state to update activity
+  DateTime storedTime = DateTime.now();
+  List<bool> occurrenceDays = new List.filled(7, true);
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (this.editing) {
+      final now = new DateTime.now();
+      storedTime = new DateTime(now.year, now.month, now.day, activity.occurrenceTime.hour, activity.occurrenceTime.minute);
+      displayTime = new DateFormat().add_jm().format(storedTime);
+      occurrenceDays = activity.occurrenceDays;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,60 +59,99 @@ class _CreateActivityState extends State<CreateActivity> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create New Activity'),
+        title: this.editing
+            ? Text('Update Activity')
+            : Text('Create New Activity'),
       ),
-      body: Padding(
+      body: ListView(
         padding: EdgeInsets.all(16.0),
-        child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'Name',
-                  ),
-                  onSaved: (value) {
-                    activity.name = value;
-                  },
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'You must give your activity a name';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'Description',
-                  ),
-                  onSaved: (value) {
-                    activity.description = value;
-                  },
-                  validator: (value) {
-                    return null;
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: RaisedButton(
-                    onPressed: () {
-                      // Validate will return true if the form is valid, or false if
-                      // the form is invalid.
-                      if (_formKey.currentState.validate()) {
-                        // Run save callbacks on fields
-                        _formKey.currentState.save();
-                        /// Add to model
-                        model.add(activity);
-                        Navigator.pop(context);
-                      }
+        children: <Widget>[
+          Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'Name',
+                    ),
+                    initialValue: activity.name,
+                    onSaved: (value) {
+                      activity.name = value;
                     },
-                    child: Text('Create'),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'You must give your activity a name';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-              ],
-            )
-        ),
-      )
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'Description',
+                    ),
+                    initialValue: activity.description,
+                    onSaved: (value) {
+                      activity.description = value;
+                    },
+                    validator: (value) {
+                      return null;
+                    },
+                  ),
+                  FlatButton(
+                      onPressed: () {
+                        DatePicker.showTime12hPicker(context,
+                            onConfirm: (date) => {
+                                  setState(() {
+                                    displayTime =
+                                        new DateFormat().add_jm().format(date);
+                                  }),
+                              activity.occurrenceTime = TimeOfDay.fromDateTime(date)
+                                });
+                      },
+                      child: Text(
+                        'Change Time: $displayTime',
+                        style: TextStyle(color: Colors.blue),
+                      )),
+                  WeekdaySelector(
+                      onChanged: (int day) {
+                        setState(() {
+                          final index = day % 7;
+                          occurrenceDays[index] = !occurrenceDays[index];
+                        });
+                      },
+                      values: occurrenceDays),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: RaisedButton(
+                      onPressed: () {
+                        // Validate will return true if the form is valid, or false if
+                        // the form is invalid.
+                        if (_formKey.currentState.validate()) {
+                          // Run save callbacks on fields
+                          _formKey.currentState.save();
+
+                          // Any other additional saving
+                          activity.occurrenceDays = this.occurrenceDays;
+
+                          // Insert or update
+                          if (this.editing) {
+                            model.update(activity);
+                          } else {
+                            /// Add to model
+                            model.add(activity);
+                          }
+
+                          Navigator.pop(context);
+                        }
+                      },
+                      child:
+                          this.editing ? Text("Save Changes") : Text('Create'),
+                    ),
+                  ),
+                ],
+              )),
+        ],
+      ),
     );
   }
 }

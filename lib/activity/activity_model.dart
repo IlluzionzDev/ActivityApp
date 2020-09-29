@@ -17,6 +17,11 @@ class ActivityModel extends ChangeNotifier {
     return _activities[id];
   }
 
+  void update(Activity activity) {
+    this._activities.update(activity.id, (value) => activity);
+    notifyListeners();
+  }
+
   void add(Activity activity) {
     activity.id = nextId;
     _activities.putIfAbsent(nextId++, () => activity);
@@ -27,6 +32,7 @@ class ActivityModel extends ChangeNotifier {
   /// Remove by id
   void remove(int id) {
     _activities.remove(id);
+    notifyListeners();
   }
 
   /// Removes all items from the cart.
