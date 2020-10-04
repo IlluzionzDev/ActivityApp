@@ -35,7 +35,7 @@ class _UpdateActivityState extends State<UpdateActivity> {
   final _formKey = GlobalKey<FormState>();
 
   // Nicely formatted time to display
-  String displayTime = "Select a time";
+  String displayTime = new DateFormat().add_jm().format(DateTime.now());
 
   /// Store occurrence details here in state to update activity
   DateTime storedTime = DateTime.now();
@@ -105,7 +105,7 @@ class _UpdateActivityState extends State<UpdateActivity> {
                                     displayTime =
                                         new DateFormat().add_jm().format(date);
                                   }),
-                              activity.occurrenceTime = TimeOfDay.fromDateTime(date)
+                              storedTime = date,
                                 });
                       },
                       child: Text(
@@ -132,6 +132,7 @@ class _UpdateActivityState extends State<UpdateActivity> {
 
                           // Any other additional saving
                           activity.occurrenceDays = this.occurrenceDays;
+                          activity.occurrenceTime = TimeOfDay.fromDateTime(storedTime);
 
                           // Insert or update
                           if (this.editing) {
