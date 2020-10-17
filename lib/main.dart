@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/activity/activity_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 import 'home.dart';
 
@@ -20,9 +18,6 @@ void main() {
       initializationSettingsAndroid, initializationSettingsIOS);
 
   flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
-  // Time zones
-  tz.initializeTimeZones();
 }
 
 /// Main application Widget, our display screen
@@ -35,6 +30,7 @@ class App extends StatelessWidget {
       create: (context) => ActivityModel(),
       child: MaterialApp(
         title: 'Activities',
+        theme: ThemeData(fontFamily: 'OpenSans'),
         home: Home(),
       ),
     );

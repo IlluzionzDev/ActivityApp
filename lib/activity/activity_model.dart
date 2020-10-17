@@ -17,7 +17,7 @@ class ActivityModel extends ChangeNotifier {
   Map<int, Activity> get activities => _activities;
 
   void saveToDisk() async {
-    final directory = await getLibraryDirectory();
+    final directory = await getApplicationDocumentsDirectory();
     final dataFile = new File('${directory.path}/activities.json');
 
     // Create json
@@ -36,7 +36,7 @@ class ActivityModel extends ChangeNotifier {
     // Clear before loading
     _activities.clear();
 
-    final directory = await getLibraryDirectory();
+    final directory = await getApplicationDocumentsDirectory();
     final dataFile = new File('${directory.path}/activities.json');
 
     String contents = await dataFile.readAsString();

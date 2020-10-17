@@ -107,33 +107,3 @@ class _DisplayActivitiesState extends State<DisplayActivities> {
         });
   }
 }
-
-/// Home Screen
-class DisplayActivitiesHome extends StatefulWidget {
-  @override
-  _DisplayActivitiesHomeState createState() => _DisplayActivitiesHomeState();
-}
-
-class _DisplayActivitiesHomeState extends State<DisplayActivitiesHome> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Activities'),
-      ),
-      body: new DisplayActivities(),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Create new activity
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      new UpdateActivity(new Activity(), false)));
-        },
-        label: Text('New Activity'),
-        icon: Icon(Icons.add),
-      ),
-    );
-  }
-}
