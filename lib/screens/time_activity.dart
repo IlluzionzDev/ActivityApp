@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/activity/activity.dart';
 import 'package:flutter_app/activity/timer/custom_timer.dart';
+import 'package:flutter_app/home.dart';
+import 'package:flutter_app/screens/display_activities.dart';
 
 class ActivityTimer extends StatefulWidget {
 
@@ -37,9 +39,6 @@ class _ActivityTimerState extends State<ActivityTimer> {
       // Log start time
       this.activity.analytics.logStartTime(TimeOfDay.now());
     });
-
-    print(this.activity.analytics.getLastStartTime());
-    print(this.activity.analytics.getAverageCompletion());
   }
 
   // Either start or stop timer depending on whether it's going
@@ -105,7 +104,10 @@ class _ActivityTimerState extends State<ActivityTimer> {
                       // Finish timer
                       stopTimer();
 
-                      Navigator.pop(context);
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => new Home()));
                     },
                     child: Text(
                       "Finish",

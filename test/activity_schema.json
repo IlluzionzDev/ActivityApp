@@ -1,0 +1,31 @@
+{
+  "1": {
+    "name": "Demo Activity",
+    "description": "Demo Description",
+    "time": {
+      "hour": 12,
+      "minute": 0
+    },
+    "days": {
+      "1": true,
+      "2": true,
+      "3": true,
+      "4": true,
+      "5": true,
+      "6": true,
+      "7": true
+    },
+    "analytics": {
+      "durations": [
+        60,
+        25
+      ],
+      "startTimes": [
+        {
+          "hour": 0,
+          "minute": 0
+        }
+      ]
+    }
+  }
+}

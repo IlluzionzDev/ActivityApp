@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'activity.dart';
 
@@ -11,6 +15,42 @@ class ActivityModel extends ChangeNotifier {
   int nextId = 1;
 
   Map<int, Activity> get activities => _activities;
+
+  void saveToDisk() async {
+    final directory = await getLibraryDirectory();
+    final dataFile = new File('${directory.path}/activities.json');
+
+    // Create json
+    Map<String, dynamic> data = new Map();
+    List<dynamic> activities = new List();
+
+    _activities.values.forEach((element) {
+      activities.add(jsonEncode(element));
+    });
+
+    data.putIfAbsent("activities", () => activities);
+    dataFile.writeAsString(jsonEncode(data));
+  }
+
+  void loadFromDisk() async {
+    // Clear before loading
+    _activities.clear();
+
+    final directory = await getLibraryDirectory();
+    final dataFile = new File('${directory.path}/activities.json');
+
+    String contents = await dataFile.readAsString();
+    Map<String, dynamic> data = jsonDecode(contents);
+
+    List<dynamic> activities = data["activities"];
+
+    activities.forEach((element) {
+      element = jsonDecode(element);
+      _activities.putIfAbsent(element["id"], () => Activity.fromJson(element));
+    });
+
+    notifyListeners();
+  }
 
   /// Get by id
   Activity get(int id) {
@@ -35,7 +75,7 @@ class ActivityModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Removes all items from the cart.
+  /// Removes all items from the model.
   void removeAll() {
     _activities.clear();
     // This call tells the widgets that are listening to this model to rebuild.

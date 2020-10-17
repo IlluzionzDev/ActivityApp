@@ -6,6 +6,9 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:weekday_selector/weekday_selector.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 /// Dual class for creating and editing activities
 class UpdateActivity extends StatefulWidget {
@@ -123,12 +126,27 @@ class _UpdateActivityState extends State<UpdateActivity> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: RaisedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         // Validate will return true if the form is valid, or false if
                         // the form is invalid.
                         if (_formKey.currentState.validate()) {
                           // Run save callbacks on fields
                           _formKey.currentState.save();
+
+                          FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+                          NotificationDetails details = new NotificationDetails(AndroidNotificationDetails("test", "test", "test"), IOSNotificationDetails());
+
+                          // Only cancel if editing
+                          if (this.editing) {
+                            activity.occurrenceDays.asMap().forEach((key,
+                                value) {
+                              if (value) {
+                                // Cancel current pending
+                                int id = activity.id + (key + 1 * 1000);
+                                flutterLocalNotificationsPlugin.cancel(id);
+                              }
+                            });
+                          }
 
                           // Any other additional saving
                           activity.occurrenceDays = this.occurrenceDays;
@@ -142,6 +160,25 @@ class _UpdateActivityState extends State<UpdateActivity> {
                             model.add(activity);
                           }
 
+                          this.occurrenceDays.asMap().forEach((key, value) {
+                            if (value) {
+                              // Get day from index
+                              Day day = Day(key + 1);
+                              // Generate unique id
+                              int id = activity.id + (key + 1 * 1000);
+
+                              flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
+                                  id,
+                                  activity.name,
+                                  "Don't forget to do your activity. Don't let yourself down",
+                                  day,
+                                  Time(storedTime.hour, storedTime.minute, 0),
+                                  details);
+                            }
+                          });
+
+                          model.saveToDisk();
+                          // model.loadFromDisk();
                           Navigator.pop(context);
                         }
                       },

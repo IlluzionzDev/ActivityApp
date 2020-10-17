@@ -63,7 +63,7 @@ class _ActivityListObjectState extends State<ActivityListObject> {
           FlatButton(
               onPressed: () {
                 // Start activity
-                Navigator.push(
+                Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                         builder: (context) => new ActivityTimer(activity)));
@@ -76,7 +76,7 @@ class _ActivityListObjectState extends State<ActivityListObject> {
               icon: Icon(Icons.more_vert),
               onPressed: () {
                 /// Open options menu
-                Navigator.pushReplacement(
+                Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => new UpdateActivity(

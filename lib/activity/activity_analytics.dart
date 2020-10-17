@@ -8,6 +8,13 @@ class ActivityAnalytics {
   // Time of day the activity was started
   List<TimeOfDay> _startTimes = new List();
 
+  // Getters
+  List<Duration> get durations => _durations;
+  List<TimeOfDay> get startTimes => _startTimes;
+
+  ActivityAnalytics();
+  ActivityAnalytics.manual(this._durations, this._startTimes);
+
   void logDuration(Duration duration) {
     _durations.add(duration);
   }
