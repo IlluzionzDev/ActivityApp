@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_app/activity/activity.dart';
 import 'package:flutter_app/activity/timer/custom_timer.dart';
 import 'package:flutter_app/home.dart';
 import 'package:flutter_app/screens/display_activities.dart';
 
-class ActivityTimer extends StatefulWidget {
+import '../colours.dart';
 
+class ActivityTimer extends StatefulWidget {
   // Activity we are timing
   final Activity activity;
 
@@ -18,7 +20,6 @@ class ActivityTimer extends StatefulWidget {
 }
 
 class _ActivityTimerState extends State<ActivityTimer> {
-
   // Activity we are timing
   final Activity activity;
 
@@ -49,11 +50,11 @@ class _ActivityTimerState extends State<ActivityTimer> {
       if (_timer == null) {
         _timer = new Timer.periodic(
           oneSec,
-              (Timer timer) =>
-              setState(() {
-                timeData.increment();
-              },
-              ),
+          (Timer timer) => setState(
+            () {
+              timeData.increment();
+            },
+          ),
         );
       } else {
         // "Pause" timer
@@ -83,40 +84,107 @@ class _ActivityTimerState extends State<ActivityTimer> {
           return true;
         },
         child: Scaffold(
-            appBar: AppBar(
-                title: Text('Start Activity')
-            ),
-            body: Center(
+          backgroundColor: Colours.white,
+          appBar: AppBar(
+            title: Text("Begin Activity",
+                style: new TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w700,
+                    color: Colours.black)),
+            backgroundColor: Colours.white,
+            elevation: 0,
+          ),
+          body: Center(
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 140),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 20),
+                    child: Text(
+                      activity.name,
+                      style: TextStyle(
+                          fontSize: 30,
+                          color: Colours.black,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
                   Text(
                     timeData.getCurrentTime(),
-                    style: TextStyle(fontSize: 24),
-                  ),
-                  RaisedButton(
-                    onPressed: () {
-                      toggleTimer();
-                    },
-                    child: Text(this._timer == null ? "Start" : "Pause"),
-                  ),
-                  RaisedButton(
-                    onPressed: () {
-                      // Finish timer
-                      stopTimer();
-
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => new Home()));
-                    },
-                    child: Text(
-                      "Finish",
-                      style: TextStyle(color: Colors.red),),
+                    style: TextStyle(
+                        fontSize: 30,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w300),
                   ),
                 ],
               ),
             )
-        )
-    );
+          ),
+          floatingActionButton: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(bottom: 14, left: 10, right: 10),
+                child: Container(
+                  width: double.infinity,
+                  child: RaisedButton(
+                      elevation: 4,
+                      color: Colours.darkBlue,
+                      textColor: Colours.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                          side: BorderSide(color: Colours.darkBlue)),
+                      onPressed: () {
+                        toggleTimer();
+                      },
+                      child: Padding(
+                          padding:
+                          EdgeInsets.symmetric(vertical: 12, horizontal: 120),
+                          child: Text(
+                            this._timer == null ? "Start" : "Pause",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          )
+                      )
+                  ),
+                )
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Container(
+                  width: double.infinity,
+                  child: RaisedButton(
+                      elevation: 4,
+                      color: Colours.lightRed,
+                      textColor: Colours.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                          side: BorderSide(color: Colours.lightRed)),
+                      onPressed: () {
+                        // Finish timer
+                        stopTimer();
+
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) => new Home()));
+                      },
+                      child: Padding(
+                          padding:
+                          EdgeInsets.symmetric(vertical: 12, horizontal: 120),
+                          child: Text(
+                            "Stop",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          )
+                      )
+                  ),
+                ),
+              )
+            ],
+          ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+        ));
   }
 }

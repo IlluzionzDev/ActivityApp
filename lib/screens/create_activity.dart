@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:weekday_selector/weekday_selector.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import '../colours.dart';
+
 /// Dual class for creating and editing activities
 class UpdateActivity extends StatefulWidget {
   // The activity to update/create
@@ -48,7 +50,8 @@ class _UpdateActivityState extends State<UpdateActivity> {
 
     if (this.editing) {
       final now = new DateTime.now();
-      storedTime = new DateTime(now.year, now.month, now.day, activity.occurrenceTime.hour, activity.occurrenceTime.minute);
+      storedTime = new DateTime(now.year, now.month, now.day,
+          activity.occurrenceTime.hour, activity.occurrenceTime.minute);
       displayTime = new DateFormat().add_jm().format(storedTime);
       occurrenceDays = activity.occurrenceDays;
     }
@@ -59,10 +62,18 @@ class _UpdateActivityState extends State<UpdateActivity> {
     var model = context.watch<ActivityModel>();
 
     return Scaffold(
+      backgroundColor: Colours.white,
       appBar: AppBar(
-        title: this.editing
-            ? Text('Update Activity')
-            : Text('Create New Activity'),
+        iconTheme: IconThemeData(
+          color: Colours.black,
+        ),
+        title: Text(this.editing ? "Edit Activity" : "Create Activity",
+            style: new TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.w700,
+                color: Colours.black)),
+        backgroundColor: Colours.white,
+        elevation: 0,
       ),
       body: ListView(
         padding: EdgeInsets.all(16.0),
@@ -71,9 +82,19 @@ class _UpdateActivityState extends State<UpdateActivity> {
               key: _formKey,
               child: Column(
                 children: <Widget>[
+                  Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        "Name",
+                        style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      )),
                   TextFormField(
                     decoration: const InputDecoration(
-                      hintText: 'Name',
+                      hintText: 'Enter a name here...',
+                      hintStyle: TextStyle(fontSize: 13),
                     ),
                     initialValue: activity.name,
                     onSaved: (value) {
@@ -86,9 +107,22 @@ class _UpdateActivityState extends State<UpdateActivity> {
                       return null;
                     },
                   ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          "Description",
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        )),
+                  ),
                   TextFormField(
                     decoration: const InputDecoration(
-                      hintText: 'Description',
+                      hintText: 'Enter a description here...',
+                      hintStyle: TextStyle(fontSize: 13),
                     ),
                     initialValue: activity.description,
                     onSaved: (value) {
@@ -98,21 +132,73 @@ class _UpdateActivityState extends State<UpdateActivity> {
                       return null;
                     },
                   ),
-                  FlatButton(
-                      onPressed: () {
-                        DatePicker.showTime12hPicker(context,
-                            onConfirm: (date) => {
-                                  setState(() {
-                                    displayTime =
-                                        new DateFormat().add_jm().format(date);
-                                  }),
-                              storedTime = date,
-                                });
-                      },
-                      child: Text(
-                        'Change Time: $displayTime',
-                        style: TextStyle(color: Colors.blue),
-                      )),
+                  Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          "Start Time",
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        )),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(displayTime,
+                            style: TextStyle(
+                                color: Colours.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18)),
+                      ),
+                      Align(
+                          alignment: Alignment.topRight,
+                          child: RaisedButton(
+                            elevation: 4,
+                            color: Colours.darkBlue,
+                            textColor: Colours.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                                side: BorderSide(color: Colours.darkBlue)),
+                            onPressed: () {
+                              DatePicker.showTime12hPicker(context,
+                                  onConfirm: (date) => {
+                                        setState(() {
+                                          displayTime = new DateFormat()
+                                              .add_jm()
+                                              .format(date);
+                                        }),
+                                        storedTime = date,
+                                      });
+                            },
+                            child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 4, horizontal: 20),
+                                child: Text(
+                                  'Change',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold),
+                                )),
+                          )),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 20, bottom: 10),
+                    child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          "Days",
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        )),
+                  ),
                   WeekdaySelector(
                       onChanged: (int day) {
                         setState(() {
@@ -120,74 +206,92 @@ class _UpdateActivityState extends State<UpdateActivity> {
                           occurrenceDays[index] = !occurrenceDays[index];
                         });
                       },
+                      elevation: 4,
                       values: occurrenceDays),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: RaisedButton(
-                      onPressed: () async {
-                        // Validate will return true if the form is valid, or false if
-                        // the form is invalid.
-                        if (_formKey.currentState.validate()) {
-                          // Run save callbacks on fields
-                          _formKey.currentState.save();
-
-                          FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-                          NotificationDetails details = new NotificationDetails(AndroidNotificationDetails("test", "test", "test"), IOSNotificationDetails());
-
-                          // Only cancel if editing
-                          if (this.editing) {
-                            activity.occurrenceDays.asMap().forEach((key,
-                                value) {
-                              if (value) {
-                                // Cancel current pending
-                                int id = activity.id + (key + 1 * 1000);
-                                flutterLocalNotificationsPlugin.cancel(id);
-                              }
-                            });
-                          }
-
-                          // Any other additional saving
-                          activity.occurrenceDays = this.occurrenceDays;
-                          activity.occurrenceTime = TimeOfDay.fromDateTime(storedTime);
-
-                          // Insert or update
-                          if (this.editing) {
-                            model.update(activity);
-                          } else {
-                            /// Add to model
-                            model.add(activity);
-                          }
-
-                          this.occurrenceDays.asMap().forEach((key, value) {
-                            if (value) {
-                              // Get day from index
-                              Day day = Day(key + 1);
-                              // Generate unique id
-                              int id = activity.id + (key + 1 * 1000);
-
-                              flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
-                                  id,
-                                  activity.name,
-                                  "Don't forget to do your activity. Don't let yourself down",
-                                  day,
-                                  Time(storedTime.hour, storedTime.minute, 0),
-                                  details);
-                            }
-                          });
-
-                          model.saveToDisk();
-                          // model.loadFromDisk();
-                          Navigator.pop(context);
-                        }
-                      },
-                      child:
-                          this.editing ? Text("Save Changes") : Text('Create'),
-                    ),
-                  ),
                 ],
               )),
         ],
       ),
+      floatingActionButton: RaisedButton(
+        elevation: 4,
+        color: Colours.darkBlue,
+        textColor: Colours.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0),
+            side: BorderSide(color: Colours.darkBlue)),
+        onPressed: () async {
+          // Validate will return true if the form is valid, or false if
+          // the form is invalid.
+          if (_formKey.currentState.validate()) {
+            // Run save callbacks on fields
+            _formKey.currentState.save();
+
+            FlutterLocalNotificationsPlugin
+            flutterLocalNotificationsPlugin =
+            FlutterLocalNotificationsPlugin();
+            NotificationDetails details = new NotificationDetails(
+                AndroidNotificationDetails(
+                    "test", "test", "test"),
+                IOSNotificationDetails());
+
+            // Only cancel if editing
+            if (this.editing) {
+              activity.occurrenceDays
+                  .asMap()
+                  .forEach((key, value) {
+                if (value) {
+                  // Cancel current pending
+                  int id = activity.id + (key + 1 * 1000);
+                  flutterLocalNotificationsPlugin.cancel(id);
+                }
+              });
+            }
+
+            // Any other additional saving
+            activity.occurrenceDays = this.occurrenceDays;
+            activity.occurrenceTime =
+                TimeOfDay.fromDateTime(storedTime);
+
+            // Insert or update
+            if (this.editing) {
+              model.update(activity);
+            } else {
+              /// Add to model
+              model.add(activity);
+            }
+
+            this.occurrenceDays.asMap().forEach((key, value) {
+              if (value) {
+                // Get day from index
+                Day day = Day(key + 1);
+                // Generate unique id
+                int id = activity.id + (key + 1 * 1000);
+
+                flutterLocalNotificationsPlugin
+                    .showWeeklyAtDayAndTime(
+                    id,
+                    activity.name,
+                    "Don't forget to do your activity. Don't let yourself down",
+                    day,
+                    Time(storedTime.hour, storedTime.minute,
+                        0),
+                    details);
+              }
+            });
+
+            model.saveToDisk();
+            // model.loadFromDisk();
+            Navigator.pop(context);
+          }
+        },
+        child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 120),
+            child: Text(
+              'Save Changes',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            )),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

@@ -22,6 +22,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with WidgetsBindingObserver {
   ActivityModel model;
+  int _currentScreen = 0;
 
   @override
   void initState() {
@@ -64,6 +65,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           body: new DisplayActivities(),
         ),
         floatingActionButton: FloatingActionButton(
+          elevation: 4,
           onPressed: () {
             // Create new activity
             Navigator.push(
@@ -76,20 +78,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: Padding(
-          padding: EdgeInsets.only(
-              left: 16,
-              top: 0,
-              right: 16,
-              bottom: 16
-          ),
+          padding: EdgeInsets.only(left: 16, top: 0, right: 16, bottom: 16),
           child: BottomNavigationBar(
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                icon: Icon(Icons.home, color: Colours.white),
-                title: Text(
-                  'Activities',
-                  style: TextStyle(color: Colours.white),
-                ),
+                icon: Icon(Icons.fitness_center),
+                title: Text('Activities'),
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.add, color: Colours.white),
@@ -97,14 +91,25 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     style: TextStyle(color: Colours.white)),
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.info_outline, color: Colours.white),
-                title: Text('Info', style: TextStyle(color: Colours.white)),
+                icon: Icon(Icons.info_outline),
+                title: Text('Info'),
               ),
             ],
-            currentIndex: 0,
+            currentIndex: _currentScreen,
             selectedItemColor: Colours.lightBlue,
             selectedLabelStyle: TextStyle(color: Colours.lightBlue),
+            selectedIconTheme: IconThemeData(color: Colours.lightBlue),
+            unselectedItemColor: Colours.white,
+            unselectedLabelStyle: TextStyle(color: Colours.white),
+            unselectedIconTheme: IconThemeData(color: Colours.white),
             backgroundColor: Colours.darkBlue,
+            onTap: (index) => {
+              // Make sure not new activity button
+              if (index != 1)
+                setState(() {
+                  _currentScreen = index;
+                })
+            },
           ),
         ));
   }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_app/activity/activity.dart';
 import 'package:flutter_app/activity/activity_model.dart';
+import 'package:flutter_app/activity/activity_popup.dart';
 import 'package:flutter_app/screens/time_activity.dart';
 import 'package:provider/provider.dart';
 
-import 'create_activity.dart';
+import '../colours.dart';
 
 /// Represents an activity displayed in a list
 class ActivityListObject extends StatefulWidget {
@@ -29,62 +31,80 @@ class _ActivityListObjectState extends State<ActivityListObject> {
     var model = context.watch<ActivityModel>();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 0.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      activity.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 18.0,
+        padding: const EdgeInsets.symmetric(vertical: 5.0),
+        child: Card(
+            elevation: 4,
+            color: Colours.lightBlue,
+            clipBehavior: Clip.antiAlias,
+            child: Padding(
+              padding: EdgeInsets.all(5),
+              child: Column(
+                children: [
+                  ListTile(
+                    trailing: new ActivityOptions(activity, context).getPopup(),
+                    title: Text(activity.name,
+                        style: TextStyle(
+                            fontSize: 25,
+                            color: Colours.white,
+                            fontWeight: FontWeight.bold)),
+                    subtitle: RichText(
+                      text: TextSpan(
+                        children: <TextSpan>[
+                          TextSpan(text: activity.getDisplayTime(), style: TextStyle(color: Colours.white)),
+                          TextSpan(text: " |", style: TextStyle(color: Colours.white)),
+                          TextSpan(text: " M", style: TextStyle(color: activity.occurrenceDays[1] ? Colours.darkBlue : Colours.white)),
+                          TextSpan(text: " T", style: TextStyle(color: activity.occurrenceDays[2] ? Colours.darkBlue : Colours.white)),
+                          TextSpan(text: " W", style: TextStyle(color: activity.occurrenceDays[3] ? Colours.darkBlue : Colours.white)),
+                          TextSpan(text: " T", style: TextStyle(color: activity.occurrenceDays[4] ? Colours.darkBlue : Colours.white)),
+                          TextSpan(text: " F", style: TextStyle(color: activity.occurrenceDays[5] ? Colours.darkBlue : Colours.white)),
+                          TextSpan(text: " S", style: TextStyle(color: activity.occurrenceDays[6] ? Colours.darkBlue : Colours.white)),
+                          TextSpan(text: " S", style: TextStyle(color: activity.occurrenceDays[0] ? Colours.darkBlue : Colours.white)),
+                        ],
                       ),
-                    ),
-                    const Padding(padding: EdgeInsets.symmetric(vertical: 2.0)),
-                    Text(
-                      activity.description,
-                      style: const TextStyle(fontSize: 14.0),
-                    ),
-                    const Padding(padding: EdgeInsets.symmetric(vertical: 1.0)),
-                    Text(
-                      'Start Time: ' + activity.getDisplayTime(),
-                      style: const TextStyle(fontSize: 14.0),
-                    ),
-                  ],
-                ),
-              )),
-          FlatButton(
-              onPressed: () {
-                // Start activity
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => new ActivityTimer(activity)));
-              },
-              child: Text(
-                'Start Activity',
-                style: TextStyle(color: Colors.blue),
-              )),
-          IconButton(
-              icon: Icon(Icons.more_vert),
-              onPressed: () {
-                /// Open options menu
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => new UpdateActivity(
-                            model.get(this.activity.id), true)));
-              })
-        ],
-      ),
-    );
+                    )
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, top: 0, right: 0, bottom: 5),
+                    child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                            activity.description == ""
+                                ? "No Description"
+                                : activity.description,
+                            style:
+                                TextStyle(fontSize: 15, color: Colours.white))),
+                  ),
+                  ButtonBar(
+                    alignment: MainAxisAlignment.start,
+                    children: [
+                      RaisedButton(
+                        elevation: 4,
+                        color: Colours.darkBlue,
+                        textColor: Colours.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(7.0),
+                            side: BorderSide(color: Colours.darkBlue)),
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      new ActivityTimer(activity)));
+                        },
+                        child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            child: Text(
+                              'Start Activity',
+                              style: TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.bold),
+                            )),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            )));
   }
 }
 

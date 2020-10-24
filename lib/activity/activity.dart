@@ -98,6 +98,9 @@ class Activity {
   }
 
   String getDisplayTime() {
+    if (occurrenceTime == null)
+      this.occurrenceTime = TimeOfDay.now();
+
     final now = new DateTime.now();
     DateTime storedTime = new DateTime(
         now.year, now.month, now.day, occurrenceTime.hour,
