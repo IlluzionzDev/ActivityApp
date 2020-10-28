@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/activity/activity.dart';
+import 'package:flutter_app/screens/analytics_screen.dart';
 import 'package:flutter_app/screens/create_activity.dart';
 import 'package:provider/provider.dart';
 
@@ -25,8 +26,13 @@ class ActivityOptions {
           Navigator.push(
               _context,
               MaterialPageRoute(
+                  builder: (context) => new UpdateActivity(_activity, true)));
+        } else if (result == ActivityOption.ANALYTICS) {
+          Navigator.push(
+              _context,
+              MaterialPageRoute(
                   builder: (context) =>
-                  new UpdateActivity(_activity, true)));
+                  new AnalyticsScreen(_activity)));
         } else if (result == ActivityOption.DELETE) {
           this.model.remove(_activity.id);
         }

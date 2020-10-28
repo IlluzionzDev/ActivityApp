@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/create_activity.dart';
+import 'package:flutter_app/screens/info_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_app/screens/display_activities.dart';
 
@@ -52,7 +53,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Your Activities',
+          title: Text(_currentScreen == 0 ? 'Your Activities' : "Information",
               style: new TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.w700,
@@ -62,7 +63,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         ),
         body: new Scaffold(
           backgroundColor: Colours.white,
-          body: new DisplayActivities(),
+          body: _currentScreen == 0 ? new DisplayActivities() : new InfoScreen(),
         ),
         floatingActionButton: FloatingActionButton(
           elevation: 4,

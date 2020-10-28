@@ -1,6 +1,9 @@
 // Class to store timer data
 class CustomTimer {
 
+  CustomTimer();
+  CustomTimer.preset(this.duration);
+
   // Store time data
   Duration duration = new Duration();
 

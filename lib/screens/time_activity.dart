@@ -185,6 +185,7 @@ class _ActivityTimerState extends State<ActivityTimer> {
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
-        ));
+        )
+    );
   }
 }
